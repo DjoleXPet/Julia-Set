@@ -1,0 +1,155 @@
+%% za boje
+point PP 0 0 4590 0
+getx Px PP
+background 0 0 0
+number T 0 % parametar boje
+
+number r 255
+number g 0
+number b 0
+
+expression T { Px - 1530 * floor(Px/1530) }  % loop kroz svih 7 faza
+expression Tc { T - 255 * floor(T/255) }
+
+if_then_else {T < 255} 
+{ 
+% krece od crvene, povecava plavu
+	number r 255
+	number g 0
+	expression b {Tc}
+ }
+{
+	if_then_else {T < 255 * 2} 
+	{ 
+		% plava max, smanjuje crvenu
+		expression r { 255 - Tc }
+		number g 0
+		number b 255
+	 }
+	{
+		if_then_else {T < 255 * 3} 
+		{ 
+			% plava max, zelena povecava
+			number r 0
+			expression g {Tc}
+			number b 255
+		 }
+		{		
+			if_then_else {T < 255 * 4} 
+			{ 
+				% zelena max, plava smanjuje
+				number r 0
+				number g 255
+				expression b { 255 - Tc }
+			 }
+			{
+				if_then_else {T < 255 * 5} 
+				{	 
+					% zelena max, crvena povecava
+					expression r {Tc}
+					number g 255
+					number b 0
+			 	}
+ 				{
+					if_then_else {T < 255 * 6}
+					{	 
+						 % crvena max, zelena smanjuje
+						number r 255
+						expression g { 255 - Tc }
+						number b 0
+			 		}
+ 					{
+						number Tc 0
+					}
+				}	
+			}
+		}
+	}
+}
+
+
+%%%%%%
+
+
+
+
+
+number x_iter -2 % x osa 0 - 140
+number y_iter -2 % y osa 0 - 100
+
+background 0 0 0 
+
+% funkcija za kostantu koja se dodaje
+point Rhoo 0 0 6.28 6.28
+
+number radius 0.2
+getx Rho Rhoo
+
+expression real { 2.3 * radius * (1 - cos( Rho )) * cos (Rho)  }
+expression imaginary { 2 * radius * (1 - cos( Rho )) * sin (Rho)  }
+
+
+% number a -0.8 % konstanta
+% number b 0.2
+number korak 0.01
+number max_iter 32
+
+number i 0
+while {x_iter <= 2}
+{
+
+while {y_iter <= 2}
+{
+	expression x {x_iter}
+	expression y {y_iter}
+	number iter 0
+	
+
+	while { x*x + y*y <= 4 && iter < max_iter } 
+	{
+		expression xtmp { x * x - y * y + real}
+		expression y {2*y*x + imaginary}
+		expression x {xtmp}
+	
+		expression iter {iter + 1}
+	}
+
+	if_then_else {iter == max_iter} {
+		color r g b
+	}
+	{
+		expression iter {iter * 8}
+		%color 0 0 iter	
+
+		if_then_else {iter > 128}
+		{color iter 0 0}
+		{color 0 0 iter}
+		
+	}
+
+	%translacija, skaliranje i crtanje tacaka
+	expression XCoord {x_iter * 20 + 70}
+	expression YCoord {y_iter * 20 + 50}
+	point B XCoord YCoord
+	%cmark B
+	expression x1 {XCoord + korak*10}
+	expression y1 {YCoord + korak*10}
+	point B1 x1 y1
+	fillcircle B B1
+	
+
+	
+	expression y_iter { y_iter + korak}
+	expression i { i + 1 }
+}
+number y_iter -2
+
+expression x_iter { x_iter + korak }
+}
+
+animation_frames  120 60
+
+
+
+
+
