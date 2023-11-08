@@ -1,0 +1,82 @@
+%% za boje
+point PP 0 0 4590 0
+getx Px PP
+background 0 0 0
+number T 0 % parametar boje
+
+number r 255
+number g 255
+number b 0
+
+
+
+
+
+%%%%%%%%%%%%%%
+number x_iter -2 % x osa 0 - 140
+number y_iter -2 % y osa 0 - 100
+
+% funkcija za kostantu koja se dodaje
+% parametri za razlicite oblike
+number real 0.355 % konstanta
+number imaginary 0.355
+number max_iter 256
+number bail 2
+number korak 0.005
+
+number i 0
+while {x_iter <= 2}
+{
+while {y_iter <= 2}
+{
+	expression x {x_iter}
+	expression y {y_iter}
+	number iter 0
+	
+
+	
+
+
+
+	while { x*x + y*y <= bail && iter < max_iter } 
+	{
+		expression xtmp { x * x - y * y + real}
+		expression y {2*y*x + imaginary}
+		expression x {xtmp}
+	
+		expression iter {iter + 1}
+
+		expression i { i + 1 } % broj ulaska u petlju
+	}
+
+	if_then_else {iter == max_iter} {
+		color r g b 
+	}
+	{
+		expression iter { iter }
+		if_then_else {iter > 128}
+		{color iter 0 0}
+		{color 0 0 iter}
+	}
+
+	%translacija, skaliranje i crtanje tacaka
+	expression XCoord {x_iter * 30 + 70}
+	expression YCoord {y_iter * 30 + 50}
+	point B XCoord YCoord
+	%cmark B
+	expression x1 {XCoord + korak*20}
+	expression y1 {YCoord + korak*20}
+	point B1 x1 y1
+	fillcircle B B1
+	
+
+	
+	expression y_iter { y_iter + korak}
+	
+}
+number y_iter -2
+
+expression x_iter { x_iter + korak }
+}
+
+animation_frames  1 1
